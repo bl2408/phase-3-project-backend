@@ -8,7 +8,7 @@ class ApplicationController < Sinatra::Base
 
   post "/login" do
 
-    name = params[:name] ||= ""
+    name = request.POST["name"] ||= ""
 
     if name == ""
       return create_response suc: false, res: "No name param found!"
