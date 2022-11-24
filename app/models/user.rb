@@ -1,5 +1,8 @@
 class User < ActiveRecord::Base
     belongs_to :role
+    # has_many :posts
+    has_many :posts, foreign_key: 'owner_id'
+
 
     # Instance methods
 

@@ -11,5 +11,7 @@ User.create(name: "Brian", role: role1)
 User.create(name: "Alice", role: role2)
 User.create(name: "Bob", role: role3)
 
+Post.create(title: "First post!", body: "This is my first post.")
+
 
 puts "✅ Done seeding!"
