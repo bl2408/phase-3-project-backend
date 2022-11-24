@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_23_224917) do
+ActiveRecord::Schema.define(version: 2022_11_24_020948) do
 
   create_table "posts", force: :cascade do |t|
     t.string "title"
     t.text "body"
     t.integer "owner_id"
-    t.integer "viewable"
+    t.integer "viewable_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["owner_id"], name: "index_posts_on_owner_id"
@@ -29,6 +29,10 @@ ActiveRecord::Schema.define(version: 2022_11_23_224917) do
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.integer "role_id"
+  end
+
+  create_table "viewables", force: :cascade do |t|
+    t.string "name"
   end
 
   add_foreign_key "posts", "users", column: "owner_id"
