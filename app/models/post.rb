@@ -20,10 +20,15 @@ class Post < ActiveRecord::Base
     end
 
     def self.get_user_all_posts author
-        self.where(viewable: self.viewable_all, author: author)
+        merge_author(self.where(viewable: self.viewable_all, author: author))
     end
-    def self.get_user_all_posts_auth author
-        self.where.not(viewable: self.viewable_all_auth).where(author: author)
+
+    def self.get_user_all_posts_auth author, showDrafts = false
+        if showDrafts
+            merge_author(self.where(author: author))
+        else
+            merge_author(self.where.not(viewable: self.viewable_all_auth).where(author: author))
+        end
     end
 
 

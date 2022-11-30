@@ -20,8 +20,8 @@ class UserController < ApplicationController
     end
     
     #view profile id or name
-    get "/:id" do
-      user = params[:id] ||= ""
+    get "/:userid" do
+      user = params[:userid] ||= ""
       return to_response suc: false, res: "No user param found!" if user==""
 
       results = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
@@ -35,8 +35,8 @@ class UserController < ApplicationController
 
 
     #view profile posts
-    get "/:id/posts" do
-      user = params[:id] ||= ""
+    get "/:userid/posts" do
+      user = params[:userid] ||= ""
       return to_response suc: false, res: "No user param found!" if user==""
 
       profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
@@ -51,13 +51,19 @@ class UserController < ApplicationController
     end
 
     #view profile posts with auth
-    post "/:id/posts" do
-      user = params[:id] ||= ""
+    post "/:userid/posts" do
+      user = params[:userid] ||= ""
+
+      currentUser = {
+        name: request.POST["name"] ||= "",
+        id: request.POST["id"] ||= ""
+      }
+
       return to_response suc: false, res: "No user param found!" if user==""
 
       profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
-
-      results = Post.get_user_all_posts_auth profile
+      puts "CHECKING: #{currentUser[:id] === profile.id}"
+      results = Post.get_user_all_posts_auth profile, currentUser[:id] === profile.id
 
         to_response(
             suc: results.size > 0, 
