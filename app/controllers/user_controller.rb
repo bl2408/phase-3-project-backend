@@ -21,12 +21,10 @@ class UserController < ApplicationController
     
     #view profile id or name
     get "/:id" do
-  
-      profile = params[:id] ||= ""
-  
-      return to_response suc: false, res: "No user param found!" if profile==""
+      user = params[:id] ||= ""
+      return to_response suc: false, res: "No user param found!" if user==""
 
-      results = is_numeric?(profile) ? User.find(profile) : User.get_profile(name: profile)
+      results = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
 
       
       return to_response suc: false, res: "No user found!" if results == nil
@@ -39,10 +37,9 @@ class UserController < ApplicationController
     #view profile posts
     get "/:id/posts" do
       user = params[:id] ||= ""
-
       return to_response suc: false, res: "No user param found!" if user==""
 
-      profile = is_numeric?(user) ?  user : User.get_profile(name: user).id
+      profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
 
       results = Post.get_user_all_posts profile
 
@@ -56,10 +53,9 @@ class UserController < ApplicationController
     #view profile posts with auth
     post "/:id/posts" do
       user = params[:id] ||= ""
-
       return to_response suc: false, res: "No user param found!" if user==""
 
-      profile = is_numeric?(user) ?  user : User.get_profile(name: user).id
+      profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
 
       results = Post.get_user_all_posts_auth profile
 
@@ -69,6 +65,4 @@ class UserController < ApplicationController
             options: {except: ["viewable_id", "author_id"]}
         ) 
     end
-
-
 end
