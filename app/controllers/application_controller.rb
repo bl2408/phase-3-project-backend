@@ -10,7 +10,7 @@ class ApplicationController < Sinatra::Base
   def to_response suc:false, res: nil, options: nil
     {
       success: suc,
-      result: res,
+      results: res,
     }.to_json(options)
 
   end
