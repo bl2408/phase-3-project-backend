@@ -12,5 +12,15 @@ end
 use Rack::JSONBodyParser
 
 # Our application
-run ApplicationController
+map "/" do
+  run ApplicationController
+end
+
+map "/users" do
+  run UserController
+end
+
+map "/posts" do
+  run PostController
+end
 
