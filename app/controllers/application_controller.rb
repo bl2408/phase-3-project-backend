@@ -3,7 +3,7 @@ class ApplicationController < Sinatra::Base
 
   # Add your routes here
   get "/" do
-    { result: "Good luck with your project!" }.to_json
+    { result: "Nothing going on here." }.to_json
   end
 
 
@@ -13,6 +13,10 @@ class ApplicationController < Sinatra::Base
       result: res,
     }.to_json(options)
 
+  end
+
+  def is_numeric?(obj) 
+    obj.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? false : true
   end
 
 end

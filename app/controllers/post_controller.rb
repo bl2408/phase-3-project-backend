@@ -3,32 +3,51 @@ class PostController < ApplicationController
     hash_post_options = {except: ["viewable_id", "author_id", "role_id"]}
 
     # /posts Routes
+
+    #all posts
     get "/" do
+
+        results = Post.get_all_posts
+
         to_response(
-            suc: true, 
-            res: merge_author_json(Post.where(viewable: Viewable.find_by(name: "public"))), 
+            suc: results.size > 0, 
+            res: results, 
             options: hash_post_options
         )    
     end
 
+    #all posts when auth
     post "/" do      
+        results = Post.get_all_posts_auth
+
         to_response(
-            suc: true, 
-            res: merge_author_json(Post.where.not(viewable: Viewable.find_by(name: "draft"))), 
+            suc: results.size > 0, 
+            res: results, 
+            options: hash_post_options
+        )      
+    end
+
+
+    #single posts
+    get "/:id" do
+        results = Post.get_single_post params[:id]
+
+        to_response(
+            suc: results.size == 1, 
+            res: results, 
             options: hash_post_options
         )    
     end
 
-    private
+    #single post with auth
+    post "/:id" do      
+        results = Post.get_single_post_auth params[:id]
 
-    def merge_author_json postQuery
-        postQuery.includes(:author).map do |post|
-            post.attributes.merge(
-              'author' => post.author,
-            )
-        end
+        to_response(
+            suc: results.size == 1, 
+            res: results, 
+            options: hash_post_options
+        )    
     end
-
-    
 
 end
