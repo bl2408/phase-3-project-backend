@@ -6,11 +6,13 @@ class ApplicationController < Sinatra::Base
     { result: "Good luck with your project!" }.to_json
   end
 
-  def create_response suc:false, res: ""
-      {
-        success: suc,
-        result: res
-      }.to_json
-    end
+
+  def to_response suc:false, res: nil, options: nil
+    {
+      success: suc,
+      result: res,
+    }.to_json(options)
+
+  end
 
 end
