@@ -44,7 +44,11 @@ class Post < ActiveRecord::Base
     end
 
     def self.new_post user:, post:, view:
-         Post.create(title: post["title"], body: post["body"], author: user, viewable: view)
+        Post.create(title: post["title"], body: post["body"], author: user, viewable: view)
+    end
+
+    def self.edit_post postId:, user:, post:, view:
+        Post.update(postId, title: post["title"], body: post["body"], author: user, viewable: view)
     end
 
     def self.delete_post id

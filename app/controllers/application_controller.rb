@@ -8,30 +8,58 @@ class ApplicationController < Sinatra::Base
 
   # create post
   post "/new/post" do    
-      verify = verify_user(request.POST["user"])
+    verify = verify_user(request.POST["user"])
 
-      viewable = Viewable.find_by(name: request.POST["viewable"]);
+    viewable = Viewable.find_by(name: request.POST["viewable"]);
 
-      if viewable == nil
-        verify[:success] = false
-      end
+    if viewable == nil
+      verify[:success] = false
+    end
 
-      if verify[:success]
+    if verify[:success]
 
-        results = Post.new_post user: verify[:value], post: request.POST, view: viewable
+      results = Post.new_post user: verify[:value], post: request.POST, view: viewable
 
-        to_response(
-            suc: true, 
-            res: results, 
-        )  
+      to_response(
+          suc: true, 
+          res: results, 
+      )  
 
-      else
-        to_response(
-            suc: false, 
-            res: "Failed to create new post!", 
-        )  
-      end  
+    else
+      to_response(
+          suc: false, 
+          res: "Failed to create new post!", 
+      )  
+    end  
+end
+
+put "/edit/post/:id" do   
+
+
+  verify = verify_user(params["user"])
+
+  viewable = Viewable.find_by(name: params["viewable"]);
+
+  if viewable == nil
+    verify[:success] = false
   end
+
+  if verify[:success]
+
+    results = Post.edit_post postId: params["id"], user: verify[:value], post: params, view: viewable
+
+    to_response(
+        suc: true, 
+        res: results, 
+    )  
+
+  else
+    to_response(
+        suc: false, 
+        res: "Failed to update new post!", 
+    )  
+  end  
+end
 
   get "/viewables" do
     to_response(

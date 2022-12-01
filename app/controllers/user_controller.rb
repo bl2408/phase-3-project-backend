@@ -55,15 +55,7 @@ class UserController < ApplicationController
       user = params[:userid] ||= ""
       return to_response suc: false, res: "No user param found!" if user==""
 
-      # puts request.POST
-      # return {success:false}.to_json
-
-      # currentUser = {
-      #   name: request.POST["name"] ||= "",
-      #   id: request.POST["id"] ||= ""
-      # }
-
-      verify = verify_user(request.POST)
+      verify = verify_user(request.POST["user"])
       urlProfile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
       results = Post.get_user_all_posts_auth urlProfile, verify[:value][:id] == urlProfile.id
         
@@ -80,12 +72,5 @@ class UserController < ApplicationController
             options: {except: ["viewable_id", "author_id"]}
         ) 
       end
-
-      
-
-      # profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
-      # results = Post.get_user_all_posts_auth profile, currentUser[:id] == profile.id
-
-        
     end
 end
