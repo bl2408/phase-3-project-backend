@@ -17,6 +17,8 @@ class Post < ActiveRecord::Base
 
     def self.get_single_post_auth id, user
             db = merge_author(self.where(id: id)).first
+
+            return [] if db == nil
             
             if db["viewable_id"] == self.viewable_all_auth.id
                 if db["author"].id == user.id
@@ -43,6 +45,14 @@ class Post < ActiveRecord::Base
 
     def self.new_post user:, post:, view:
          Post.create(title: post["title"], body: post["body"], author: user, viewable: view)
+    end
+
+    def self.delete_post id
+        db = self.where(id: id)
+        return [] if db.size == 0
+        stored = db.first
+        db.first.destroy
+        [stored]
     end
 
 

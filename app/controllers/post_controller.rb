@@ -41,7 +41,7 @@ class PostController < ApplicationController
 
     #single post with auth
     post "/:id" do  
-        verify = verify_user(request.POST)
+        verify = verify_user(request.POST["user"])
         results = Post.get_single_post_auth params[:id], verify[:success] ? verify[:value] : nil
         
       if verify[:success]
@@ -58,4 +58,18 @@ class PostController < ApplicationController
         ) 
       end
     end
+
+    delete "/:id" do 
+        results = Post.delete_post params[:id]
+
+        to_response(
+            suc: results.size > 0, 
+            res: results, 
+            options: {except: ["viewable_id", "author_id"]}
+        )
+    end
+
+
+
+
 end
