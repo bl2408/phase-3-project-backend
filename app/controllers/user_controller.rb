@@ -39,9 +39,9 @@ class UserController < ApplicationController
       user = params[:userid] ||= ""
       return to_response suc: false, res: "No user param found!" if user==""
 
-      profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
+      urlProfile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
 
-      results = Post.get_user_all_posts profile
+      results = Post.get_user_all_posts urlProfile
 
         to_response(
             suc: results.size > 0, 
@@ -53,22 +53,39 @@ class UserController < ApplicationController
     #view profile posts with auth
     post "/:userid/posts" do
       user = params[:userid] ||= ""
-
-      currentUser = {
-        name: request.POST["name"] ||= "",
-        id: request.POST["id"] ||= ""
-      }
-
       return to_response suc: false, res: "No user param found!" if user==""
 
-      profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
-      puts "CHECKING: #{currentUser[:id] === profile.id}"
-      results = Post.get_user_all_posts_auth profile, currentUser[:id] === profile.id
+      # puts request.POST
+      # return {success:false}.to_json
 
+      # currentUser = {
+      #   name: request.POST["name"] ||= "",
+      #   id: request.POST["id"] ||= ""
+      # }
+
+      verify = verify_user(request.POST)
+      urlProfile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
+      results = Post.get_user_all_posts_auth urlProfile, verify[:value][:id] == urlProfile.id
+        
+      if verify[:success]
         to_response(
             suc: results.size > 0, 
             res: results, 
             options: {except: ["viewable_id", "author_id"]}
+        )
+      else
+        to_response(
+            suc: false, 
+            res: [], 
+            options: {except: ["viewable_id", "author_id"]}
         ) 
+      end
+
+      
+
+      # profile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
+      # results = Post.get_user_all_posts_auth profile, currentUser[:id] == profile.id
+
+        
     end
 end

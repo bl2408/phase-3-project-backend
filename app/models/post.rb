@@ -4,31 +4,45 @@ class Post < ActiveRecord::Base
 
 
     def self.get_all_posts
-        merge_author(self.where(viewable: self.viewable_all))
+        merge_author(self.where(viewable: self.viewable_all).order(created_at: :desc))
     end
 
     def self.get_all_posts_auth
-        merge_author(self.where.not(viewable: self.viewable_all_auth))
+        merge_author(self.where.not(viewable: self.viewable_all_auth).order(created_at: :desc))
     end
 
     def self.get_single_post id
         merge_author(self.where(id: id).where(viewable: self.viewable_all))
     end
 
-    def self.get_single_post_auth id
-        merge_author(self.where(id: id).where.not(viewable: self.viewable_all_auth))
+    def self.get_single_post_auth id, user
+            db = merge_author(self.where(id: id)).first
+            
+            if db["viewable_id"] == self.viewable_all_auth.id
+                if db["author"].id == user.id
+                    [db]
+                else
+                    []
+                end
+            else
+                [db]
+            end
     end
 
     def self.get_user_all_posts author
-        merge_author(self.where(viewable: self.viewable_all, author: author))
+        merge_author(self.where(viewable: self.viewable_all, author: author).order(created_at: :desc))
     end
 
     def self.get_user_all_posts_auth author, showDrafts = false
         if showDrafts
-            merge_author(self.where(author: author))
+            merge_author(self.where(author: author).order(created_at: :desc))
         else
-            merge_author(self.where.not(viewable: self.viewable_all_auth).where(author: author))
+            merge_author(self.where.not(viewable: self.viewable_all_auth).where(author: author).order(created_at: :desc))
         end
+    end
+
+    def self.new_post user:, post:, view:
+         Post.create(title: post["title"], body: post["body"], author: user, viewable: view)
     end
 
 

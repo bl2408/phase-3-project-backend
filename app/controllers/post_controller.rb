@@ -40,14 +40,22 @@ class PostController < ApplicationController
     end
 
     #single post with auth
-    post "/:id" do      
-        results = Post.get_single_post_auth params[:id]
-
+    post "/:id" do  
+        verify = verify_user(request.POST)
+        results = Post.get_single_post_auth params[:id], verify[:success] ? verify[:value] : nil
+        
+      if verify[:success]
         to_response(
-            suc: results.size == 1, 
+            suc: results.size > 0, 
             res: results, 
-            options: hash_post_options
-        )    
+            options: {except: ["viewable_id", "author_id"]}
+        )
+      else
+        to_response(
+            suc: false, 
+            res: [], 
+            options: {except: ["viewable_id", "author_id"]}
+        ) 
+      end
     end
-
 end
