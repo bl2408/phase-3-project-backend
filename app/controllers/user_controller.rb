@@ -15,7 +15,7 @@ class UserController < ApplicationController
         return to_response suc: false, res: "No user found!"
       end
   
-      to_response suc: true, res: results
+      to_response suc: true, res: results, options: {:except => [ "role_id" ]}
   
     end
     
@@ -26,10 +26,9 @@ class UserController < ApplicationController
 
       results = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
 
-      
       return to_response suc: false, res: "No user found!" if results == nil
-      
-      to_response suc: true, res: results, options: {:except => [ :role_id ]}
+            
+      to_response suc: true, res: results, options: {:except => [ "role_id" ]}
   
     end
 

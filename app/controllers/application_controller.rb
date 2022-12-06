@@ -6,6 +6,13 @@ class ApplicationController < Sinatra::Base
     { result: "Nothing going on here." }.to_json
   end
 
+  get "/roles" do
+    to_response(
+      suc: true, 
+      res: Role.all, 
+  )
+  end
+
   # create post
   post "/new/post" do    
     verify = verify_user(request.POST["user"])

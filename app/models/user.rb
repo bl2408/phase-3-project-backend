@@ -7,6 +7,10 @@ class User < ActiveRecord::Base
 
     # Class methods
 
+    def self.find id
+        merge_role(where("id = ?", id.to_i)).first
+    end
+
     def self.get_profile attr
         check_name(attr[:name]).first
     end
@@ -24,6 +28,14 @@ class User < ActiveRecord::Base
     private
 
     def self.check_name name
-        where("lower(name) = ?", name.downcase)
+        merge_role(where("lower(name) = ?", name.downcase))
+    end
+
+    def self.merge_role userQuery
+        userQuery.includes(:role).map do |user|
+            user.attributes.merge(
+              'role' => user.role.name,
+            )
+        end
     end
 end

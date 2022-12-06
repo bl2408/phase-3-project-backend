@@ -21,14 +21,11 @@ Post.create(title: "First private post!", body: "This is a first private post.",
 Post.create(title: "First draft post!", body: "This is a first draft post.", viewable: view3, author: user1 )
 
 # User2 posts
-Post.create(title: "Second public post!", body: "This is a second private post", viewable: view1, author: user2)
-Post.create(title: "Third public post!", body: "This is a third private post", viewable: view2, author: user2)
+Post.create(title: "Second public post!", body: "This is a second public post", viewable: view1, author: user2)
+Post.create(title: "Third private post!", body: "This is a third private post", viewable: view2, author: user2)
 Post.create(title: "Second draft post!", body: "This is a first draft post", viewable: view3, author: user2)
 
-# User3 posts
-Post.create(title: "Third private post!", body: "This a third private post", viewable: view2, author: user3 )
-Post.create(title: "Third draft post!", body: "This a third draft post", viewable: view3, author: user3 )
-Post.create(title: "Fourth private post!", body: "This a fourth private post", viewable: view2, author: user3 )
+
 
 
 
