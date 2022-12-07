@@ -31,6 +31,9 @@ gem "rake", "~> 13.0"
 # Provides functionality to interact with a SQLite3 database
 gem "sqlite3", "~> 1.4"
 
+# Base 64 functionality
+gem "base64"
+
 # Require all files in a folder
 gem "require_all", "~> 3.0"
 
@@ -50,3 +53,6 @@ group :test do
   gem "rspec", "~> 3.10"
   gem "rspec-json_expectations", "~> 2.2"
 end
+
+
+

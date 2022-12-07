@@ -13,60 +13,60 @@ class ApplicationController < Sinatra::Base
   )
   end
 
-  # create post
-  post "/new/post" do    
-    verify = verify_user(request.POST["user"])
+#   # create post
+#   post "/new/post" do    
+#     verify = verify_user(request.POST["user"])
 
-    viewable = Viewable.find_by(name: request.POST["viewable"]);
+#     viewable = Viewable.find_by(name: request.POST["viewable"]);
 
-    if viewable == nil
-      verify[:success] = false
-    end
+#     if viewable == nil
+#       verify[:success] = false
+#     end
 
-    if verify[:success]
+#     if verify[:success]
 
-      results = Post.new_post user: verify[:value], post: request.POST, view: viewable
+#       results = Post.new_post user: verify[:value], post: request.POST, view: viewable
 
-      to_response(
-          suc: true, 
-          res: results, 
-      )  
+#       to_response(
+#           suc: true, 
+#           res: results, 
+#       )  
 
-    else
-      to_response(
-          suc: false, 
-          res: "Failed to create new post!", 
-      )  
-    end  
-end
+#     else
+#       to_response(
+#           suc: false, 
+#           res: "Failed to create new post!", 
+#       )  
+#     end  
+# end
 
-put "/edit/post/:id" do   
+# put "/edit/post/:id" do   
 
 
-  verify = verify_user(params["user"])
+#   verify = verify_user(params["user"])
 
-  viewable = Viewable.find_by(name: params["viewable"]);
+#   viewable = Viewable.find_by(name: params["viewable"]);
 
-  if viewable == nil
-    verify[:success] = false
-  end
+#   if viewable == nil
+#     verify[:success] = false
+#   end
 
-  if verify[:success]
+#   if verify[:success]
 
-    results = Post.edit_post postId: params["id"], user: verify[:value], post: params, view: viewable
+#     results = Post.edit_post postId: params["id"], user: verify[:value], post: params, view: viewable
 
-    to_response(
-        suc: true, 
-        res: results, 
-    )  
+#     to_response(
+#         suc: true, 
+#         res: results, 
+#     )  
 
-  else
-    to_response(
-        suc: false, 
-        res: "Failed to update new post!", 
-    )  
-  end  
-end
+#   else
+#     to_response(
+#         suc: false, 
+#         res: "Failed to update new post!", 
+#     )  
+#   end  
+# end
 
   get "/viewables" do
     to_response(
@@ -76,19 +76,20 @@ end
   end
 
 
-  def verify_user userHash
+  def verify_token token
+    results = {success: false, user: {} }
+    decodeToken = Base64.urlsafe_decode64(token);
+    tokenHash = eval(decodeToken)
+    
+    db = User.find(tokenHash[:id])
 
-    results = {success: false, value: {} }
-
-    return results if !userHash["id"] || !userHash["name"] || !userHash["role_id"]
-
-    db = User.find(userHash["id"]);
-
-    if userHash["id"] != db.id|| userHash["name"] != db.name || userHash["role_id"] != db.role_id
+    if tokenHash[:id] != db["id"]|| tokenHash[:name] != db["name"] || tokenHash[:role_id] != db["role_id"]
       results
+      pp "TOKEN: #{token} VERIFIED: false"
     else
+      pp "TOKEN: #{token} VERIFIED: true"
       results[:success] = true
-      results[:value] = db
+      results[:user] = db
       results
     end
 

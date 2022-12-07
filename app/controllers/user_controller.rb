@@ -1,23 +1,30 @@
 class UserController < ApplicationController
     # /User Routes
     #logging in
+
+    # pp request.env["HTTP_AUTH"]
+
     post "/login" do
-  
       name = request.POST["name"] ||= ""
-  
-      if name == ""
-        return to_response suc: false, res: "No name param found!"
-      end
-  
+      return to_response suc: false, res: "Failed to login" if name==""
+
       results = User.login name
-  
+
       if results.count == 0
         return to_response suc: false, res: "No user found!"
       end
-  
-      to_response suc: true, res: results, options: {:except => [ "role_id" ]}
-  
+
+      userObj = { **results[0].attributes, role: results[0].get_role }
+
+      final = {
+        user: userObj,
+        token: Base64.urlsafe_encode64(userObj.to_json)
+      }
+      
+      to_response suc: true, res: final
     end
+
+
     
     #view profile id or name
     get "/:userid" do
@@ -25,51 +32,35 @@ class UserController < ApplicationController
       return to_response suc: false, res: "No user param found!" if user==""
 
       results = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
-
+      
       return to_response suc: false, res: "No user found!" if results == nil
+      
+      userObj = { **results.attributes, role: results.get_role }
             
-      to_response suc: true, res: results, options: {:except => [ "role_id" ]}
+      to_response suc: true, res: userObj
   
     end
-
 
     #view profile posts
     get "/:userid/posts" do
       user = params[:userid] ||= ""
       return to_response suc: false, res: "No user param found!" if user==""
 
-      urlProfile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
+      results = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
+      
+      return to_response suc: false, res: "No user found!" if results == nil
 
-      results = Post.get_user_all_posts urlProfile
+     
+      if !!request.env["HTTP_TOKEN"]
+        verify = verify_token(request.env["HTTP_TOKEN"])
 
-        to_response(
-            suc: results.size > 0, 
-            res: results,
-            options: {except: ["viewable_id", "author_id"]} 
-        ) 
-    end
+        if verify[:success]
+          return to_response suc: true, res: results.get_all_posts(isAuthor: verify[:user].id == results.id)
+        end
 
-    #view profile posts with auth
-    post "/:userid/posts" do
-      user = params[:userid] ||= ""
-      return to_response suc: false, res: "No user param found!" if user==""
-
-      verify = verify_user(request.POST["user"])
-      urlProfile = is_numeric?(user) ?  User.find(user) : User.get_profile(name: user)
-      results = Post.get_user_all_posts_auth urlProfile, verify[:value][:id] == urlProfile.id
-        
-      if verify[:success]
-        to_response(
-            suc: results.size > 0, 
-            res: results, 
-            options: {except: ["viewable_id", "author_id"]}
-        )
-      else
-        to_response(
-            suc: false, 
-            res: [], 
-            options: {except: ["viewable_id", "author_id"]}
-        ) 
       end
+            
+      to_response suc: true, res: results.get_public_posts
+  
     end
 end

@@ -7,7 +7,13 @@ class PostController < ApplicationController
     #all posts
     get "/" do
 
-        results = Post.get_all_posts
+        isVerified = false
+
+        if !!request.env["HTTP_TOKEN"]
+            isVerified = verify_token(request.env["HTTP_TOKEN"])
+        end
+
+        results = Post.get_all_posts isVerified
 
         to_response(
             suc: results.size > 0, 
@@ -16,47 +22,22 @@ class PostController < ApplicationController
         )    
     end
 
-    #all posts when auth
-    post "/" do      
-        results = Post.get_all_posts_auth
-
-        to_response(
-            suc: results.size > 0, 
-            res: results, 
-            options: hash_post_options
-        )      
-    end
-
-
     #single posts
     get "/:id" do
-        results = Post.get_single_post params[:id]
+
+        isVerified = false
+
+        if !!request.env["HTTP_TOKEN"]
+            isVerified = verify_token(request.env["HTTP_TOKEN"])
+        end
+
+        results = Post.get_single_post params[:id], isVerified
 
         to_response(
             suc: results.size == 1, 
             res: results, 
             options: hash_post_options
         )    
-    end
-
-    #single post with auth
-    post "/:id" do  
-        verify = verify_user(request.POST["user"])
-        results = Post.get_single_post_auth params[:id], verify[:success] ? verify[:value] : nil
-        
-      if verify[:success]
-        to_response(
-            suc: results.size > 0, 
-            res: results, 
-            options: {except: ["viewable_id", "author_id"]}
-        )
-      else
-        to_response(
-            suc: false, 
-            res: [], 
-            options: {except: ["viewable_id", "author_id"]}
-        ) 
-      end
     end
 
     delete "/:id" do 

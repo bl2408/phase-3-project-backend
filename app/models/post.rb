@@ -3,16 +3,21 @@ class Post < ActiveRecord::Base
     belongs_to :viewable
 
 
-    def self.get_all_posts
-        merge_author(self.where(viewable: self.viewable_all).order(created_at: :desc))
+    def self.get_all_posts isVerified
+        if isVerified
+            merge_author(self.where.not(viewable: self.viewable_all_auth).order(created_at: :desc))
+        else
+            merge_author(self.where(viewable: self.viewable_all).order(created_at: :desc))
+        end
     end
 
-    def self.get_all_posts_auth
-        merge_author(self.where.not(viewable: self.viewable_all_auth).order(created_at: :desc))
-    end
 
-    def self.get_single_post id
-        merge_author(self.where(id: id).where(viewable: self.viewable_all))
+    def self.get_single_post id, isVerified
+        if isVerified
+            merge_author(self.where(id: id).where.not(viewable: self.viewable_all_auth))
+        else
+            merge_author(self.where(id: id).where(viewable: self.viewable_all))
+        end
     end
 
     def self.get_single_post_auth id, user
@@ -31,17 +36,6 @@ class Post < ActiveRecord::Base
             end
     end
 
-    def self.get_user_all_posts author
-        merge_author(self.where(viewable: self.viewable_all, author: author).order(created_at: :desc))
-    end
-
-    def self.get_user_all_posts_auth author, showDrafts = false
-        if showDrafts
-            merge_author(self.where(author: author).order(created_at: :desc))
-        else
-            merge_author(self.where.not(viewable: self.viewable_all_auth).where(author: author).order(created_at: :desc))
-        end
-    end
 
     def self.new_post user:, post:, view:
         Post.create(title: post["title"], body: post["body"], author: user, viewable: view)
@@ -60,15 +54,16 @@ class Post < ActiveRecord::Base
     end
 
 
-    private
-
+    
     def self.merge_author postQuery
         postQuery.includes(:author).map do |post|
             post.attributes.merge(
-              'author' => post.author,
+                'author' => post.author,
             )
         end
     end
+    
+    private
 
     def self.viewable_all
         Viewable.find_by(name: "public")
