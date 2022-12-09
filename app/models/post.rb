@@ -13,6 +13,7 @@ class Post < ActiveRecord::Base
 
     # get single post - verified users will get access to private posts
     def self.get_single_post id, isVerified
+
         if isVerified
             merge_author(self.where(id: id).where.not(viewable: self.viewable_all_verified))
         else
@@ -31,10 +32,16 @@ class Post < ActiveRecord::Base
     end
 
     #delete post
-    def self.delete_post id
+    def self.delete_post id, user
         db = self.where(id: id)
         return [] if db.size == 0
         stored = db.first
+
+        if user.get_role != "admin"
+            return [] unless stored.author.name == user.name
+        end
+        
+
         db.first.destroy
         [stored]
     end

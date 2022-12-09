@@ -56,6 +56,7 @@ class PostController < ApplicationController
     get "/:id" do
 
         isVerified = {success: false}
+        
 
         if !!request.env["HTTP_TOKEN"]
             isVerified = verify_token(request.env["HTTP_TOKEN"])
@@ -101,7 +102,13 @@ class PostController < ApplicationController
     end
 
     delete "/:id" do 
-        results = Post.delete_post params[:id]
+        isVerified = {success: false}
+
+        if !!request.env["HTTP_TOKEN"]
+            isVerified = verify_token(request.env["HTTP_TOKEN"])
+        end     
+
+        results = Post.delete_post params[:id], isVerified[:user] 
 
         to_response(
             suc: results.size > 0, 
