@@ -34,6 +34,9 @@ gem "sqlite3", "~> 1.4"
 # Base 64 functionality
 gem "base64"
 
+#Fake data
+gem "faker"
+
 # Require all files in a folder
 gem "require_all", "~> 3.0"
 

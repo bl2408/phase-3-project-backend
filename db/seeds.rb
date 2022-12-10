@@ -1,3 +1,9 @@
+def construct_fake_paragraphs
+    para = ""
+    (rand(10)+5).times {para += "#{Faker::Lorem.paragraph(sentence_count: rand(15)+15)}\n\n"}
+    para
+end
+
 puts "🌱 Seeding spices..."
 
 
@@ -16,18 +22,13 @@ view2 = Viewable.create(name: "private")
 view3 = Viewable.create(name: "draft")
 
 # User1 posts
-Post.create(title: "First public post!", body: "This is a first public post", viewable: view1, author: user1 )
-Post.create(title: "First private post!", body: "This is a first private post.", viewable: view2, author: user1 )
-Post.create(title: "First draft post!", body: "This is a first draft post.", viewable: view3, author: user1 )
+Post.create(title: "First public post!", body: "This is a first public post #{construct_fake_paragraphs}", viewable: view1, author: user1 )
+Post.create(title: "First private post!", body: "This is a first private post. #{construct_fake_paragraphs}", viewable: view2, author: user1 )
+Post.create(title: "First draft post!", body: "This is a first draft post. #{construct_fake_paragraphs}", viewable: view3, author: user1 )
 
 # User2 posts
-Post.create(title: "Second public post!", body: "This is a second public post", viewable: view1, author: user2)
-Post.create(title: "Third private post!", body: "This is a third private post", viewable: view2, author: user2)
-Post.create(title: "Second draft post!", body: "This is a first draft post", viewable: view3, author: user2)
-
-
-
-
-
+Post.create(title: "Second public post!", body: "This is a second public post #{construct_fake_paragraphs}", viewable: view1, author: user2)
+Post.create(title: "Third private post!", body: "This is a third private post #{construct_fake_paragraphs}", viewable: view2, author: user2)
+Post.create(title: "Second draft post!", body: "This is a first draft post #{construct_fake_paragraphs}", viewable: view3, author: user2)
 
 puts "✅ Done seeding!"

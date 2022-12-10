@@ -1,6 +1,6 @@
 class PostController < ApplicationController
 
-    hash_post_options = {except: ["viewable_id", "author_id", "role_id"]}
+    hash_post_options = {except: ["author_id", "role_id"]}
 
     # /posts Routes
 
