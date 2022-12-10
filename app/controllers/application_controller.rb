@@ -5,14 +5,14 @@ class ApplicationController < Sinatra::Base
   get "/" do
     { result: "Nothing going on here." }.to_json
   end
-
+  # returns list of roles
   get "/roles" do
     to_response(
       suc: true, 
       res: Role.all, 
   )
   end
-
+  #returns a list of viewables
   get "/viewables" do
     to_response(
         suc: true, 
@@ -20,7 +20,7 @@ class ApplicationController < Sinatra::Base
     ) 
   end
 
-
+  # verifies the users token obtain in headers
   def verify_token token
     results = {success: false, user: {} }
     decodeToken = Base64.urlsafe_decode64(token);
@@ -40,7 +40,7 @@ class ApplicationController < Sinatra::Base
 
   end
 
-
+  # universal response
   def to_response suc:false, res: nil, options: nil
     {
       success: suc,
@@ -49,6 +49,7 @@ class ApplicationController < Sinatra::Base
 
   end
 
+  #check if object is numeric
   def is_numeric?(obj) 
     obj.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? false : true
   end
