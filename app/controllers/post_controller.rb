@@ -62,7 +62,7 @@ class PostController < ApplicationController
             isVerified = verify_token(request.env["HTTP_TOKEN"])
         end
 
-        results = Post.get_single_post params[:id], isVerified[:success]
+        results = Post.get_single_post params[:id], isVerified[:success], isVerified[:user]
 
         to_response(
             suc: results.size == 1, 

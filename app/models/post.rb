@@ -12,7 +12,19 @@ class Post < ActiveRecord::Base
     end
 
     # get single post - verified users will get access to private posts
-    def self.get_single_post id, isVerified
+    def self.get_single_post id, isVerified, user = nil
+
+        post = Post.find_by(id: id)
+
+        if !post
+            return []
+        end
+
+        if post.viewable.name == "draft" && user
+            if post.author.id == user.id
+                return merge_author(self.where(id: id))
+            end
+        end
 
         if isVerified
             merge_author(self.where(id: id).where.not(viewable: self.viewable_all_verified))
