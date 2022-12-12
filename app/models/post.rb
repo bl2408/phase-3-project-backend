@@ -11,6 +11,18 @@ class Post < ActiveRecord::Base
         end
     end
 
+    def self.search_posts term, isVerified
+        
+        pp "VERIFIED: #{isVerified}"
+
+        if isVerified
+            merge_author(where("title LIKE ?", "%#{term}%").where.not(viewable: self.viewable_all_verified))
+            
+        else
+            merge_author(where("title LIKE ?", "%#{term}%").where(viewable: self.viewable_all))
+        end
+    end
+
     # get single post - verified users will get access to private posts
     def self.get_single_post id, isVerified, user = nil
 

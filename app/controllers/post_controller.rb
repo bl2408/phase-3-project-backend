@@ -13,7 +13,11 @@ class PostController < ApplicationController
             isVerified = verify_token(request.env["HTTP_TOKEN"])
         end
 
-        results = Post.get_all_posts isVerified[:success]
+        if params[:search]
+            results = Post.search_posts params[:search], isVerified[:success]
+        else
+            results = Post.get_all_posts isVerified[:success]
+        end
 
         to_response(
             suc: results.size > 0, 
